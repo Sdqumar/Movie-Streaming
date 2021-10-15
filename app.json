@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "MovieStreaming",
+    "slug": "MovieStreaming",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.sdqumar.MovieStreaming"
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "description": ""
+  }
+}
