@@ -6,12 +6,13 @@ import {
   Image,
   ScrollView,
   Animated,
-  TouchableWithoutFeedbackBase,
   ImageBackground,
   TouchableWithoutFeedback,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Profiles from "../components/Profiles";
+import ProgressBar from "../components/ProgressBar";
 import { COLORS, dummyData, icons, images, SIZES } from "../constants";
 
 const Home = ({ navigation }) => {
@@ -241,6 +242,77 @@ function renderDots(){
         </View>
     )
 }
+
+    function renderContinueWatchingSection(){
+        return(
+            <View style={{marginTop:SIZES.padding}}>
+                {/* Header */}
+                <View style={{
+                    flexDirection:'row',
+                    paddingHorizontal:SIZES.padding,
+                    alignItems:'center'
+                }}>
+                    <Text style={{
+                        fontSize:SIZES.h2,
+                        color:COLORS.white,
+                        flex:1
+                    }}>Continue Watching</Text>
+                <Image source={icons.right_arrow}
+                    style={{height:18,width:18,tintColor:COLORS.primary}}
+                    />
+                </View>
+                    
+                {/* listScroll */}
+<FlatList
+horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          marginTop: SIZES.padding,
+        }}
+        data={dummyData.continueWatching}
+        keyExtractor={(item) => `${item.name}`}
+        renderItem={({item,index})=>{
+            return(
+                <TouchableWithoutFeedback
+                onPress={()=>navigation.navigate("MovieDetail", {selectedMovie:item})}
+                >
+                    <View style={{
+                        marginLeft: index == 0? SIZES.padding:20,
+                        marginRight:index ===dummyData.continueWatching.length -1 ? SIZES.padding:0
+                    }}>
+                        {/* Thumbnail */}
+                        <Image source={item.thumbnail}  
+                        resizeMode='cover'
+                        style={{
+                            borderRadius:20,
+                            width:SIZES.width / 3,
+                            height:(SIZES.width / 3) +20
+                        }}
+                        />
+                        {/* Name */}
+                        <Text style={{
+                            marginTop:SIZES.base,color:COLORS.white,
+                            fontSize:SIZES.h4
+                        }}>
+{item.name}
+                        </Text>
+                        {/* ProgressBar */}
+                        <ProgressBar containerStyle={{
+                            marginTop:SIZES.radius
+                        }}
+                        barStyle={{height:3}}
+                        barPercentage={item.overallProgress}
+                        />
+                    </View>
+
+                </TouchableWithoutFeedback>
+            )
+        }}
+/>
+            </View>
+        )
+    }
+
   return (
     <SafeAreaView style={{ backgroundColor: COLORS.black, flex: 1 }}>
       {renterHeader()}
@@ -248,6 +320,7 @@ function renderDots(){
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
         {renderNewSeasonSecion()}
         {renderDots()}
+        {renderContinueWatchingSection()}
       </ScrollView>
     </SafeAreaView>
   );
