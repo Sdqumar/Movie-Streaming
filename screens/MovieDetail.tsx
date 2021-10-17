@@ -207,7 +207,9 @@ function renderMovieDetails(){
             borderRadius:15,backgroundColor:COLORS.primary,
             marginTop:Platform.OS =='android'? SIZES.padding *2 :0
         }
-        }>
+        }
+        onPress={()=>navigation.navigate('Movie')}
+        >
 
             <Text style={{
                 color:COLORS.white,
