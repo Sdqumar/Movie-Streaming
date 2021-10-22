@@ -275,7 +275,7 @@ horizontal
             return(
                 <TouchableWithoutFeedback
                 onPress={()=>navigation.navigate("MovieDetail", {selectedMovie:item})}
-                >
+h                >
                     <View style={{
                         marginLeft: index == 0? SIZES.padding:20,
                         marginRight:index ===dummyData.continueWatching.length -1 ? SIZES.padding:0

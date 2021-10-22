@@ -1,41 +1,125 @@
-import React, { useEffect } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {  Button, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Video, AVPlaybackStatus } from "expo-av";
-import { COLORS } from "../constants";
+import { COLORS, SIZES } from "../constants";
 import VideoPlayer from "expo-video-player";
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
+import ProgressBar from "../components/ProgressBar";
+import NetInfo from "@react-native-community/netinfo";
+import RNBackgroundDownloader from 'react-native-background-downloader';
 
 export default () => {
-  const video = React.useRef(null);
+  let [isOnline,setIsOnline] = useState(null)
+  useEffect(()=>{
 
-  const data = {
-    isPlaying: false,
+    NetInfo.addEventListener((state) => {
+      setIsOnline(state.isConnected)
+    });
+        
+  isOnline && !status?.isLoaded && video?.current?.loadAsync(asset)
+ 
+  },[isOnline])
+
+
+  const [status, setStatus] = useState(null);
+  const video = useRef(null);
+  useEffect(() => {
+    if (status != undefined) {
+    
+    }
+  }, [status]);
+  const url ='https://k.mandela.h.sabishare.com/dl/BEnPqlNrd31/6a671d23be21bc3413c3ddf8f1ac60bf8bb8539c39dc6e9e257896a88c764e3e/Bob_Hearts_Abishola_S03E03_-_Dud_(NetNaija.com).mp4'
+
+    const asset = { uri: url }
+    // const asset = require('../assets/vid.mp4')
+  const [downloadProgress, SetdownloadProgress] = useState(0);
+  // console.log((downloadProgress));
+
+  const callback = (downloadProgress) => {
+    const progress =
+      downloadProgress.totalBytesWritten /
+      downloadProgress.totalBytesExpectedToWrite;
+      SetdownloadProgress(progress)
+
   };
 
-  const [status, setStatus] = React.useState(null);
+  // let fileUri = FileSystem.documentDirectory + "vid.mp4";
+  const downloadResumable = FileSystem.createDownloadResumable(
+    url,
+          FileSystem.documentDirectory + 'small.mp4',
+          {},
+          callback
+        );
+        
 
-//   const handleplay = () => {
-//     status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
-//   }
+        const [uri,setUri] =useState(null)
+  async function downloadFile() {
+    
+    try {
+      const { uri } = await downloadResumable.downloadAsync();
+      setUri(uri)
+      console.log('Finished downloading to ', uri);
+    } catch (e) {
+      console.error(e);
+    }
+    
+};
 
-  const handleForward = (data)=>{
-    video.current.setPositionAsync(status.positionMillis +1000)
-    video.current.playAsync()
- };
 
-  const handleBackward = ()=>{
-    video.current.setPositionAsync(status.positionMillis -1000)
-    video.current.playAsync()
+  const saveFile = async (fileUri) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+
+    if (status === "granted") {
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync("../ADM/movie", asset, false);
+    }
+  
+  
+  
   };
 
+  const handlePause = async(data) => {
+    
+      await downloadResumable.pauseAsync().then(uri=>console.log(uri)
+      )
+   
+      console.log('Paused download operation, saving for future retrieval');
+
+      AsyncStorage.setItem('pausedDownload', JSON.stringify(downloadResumable.savable()));
+      
+  };
+
+
+  
+  // const handleTryload = (data) => {
+  //   // video.current.setPositionAsync(status.positionMillis +1000)
+  //   isOnline && !status?.isLoaded && video?.current?.loadAsync(asset)  
+  // };
+  // const handleResume = async () => {
+  //   try {
+  //     const { uri } = await downloadResumable.resumeAsync();
+  //     console.log("Finished downloading to ", uri);
+  //   } catch (e) {
+  //     // console.error(e);
+  //   }
+  // };
+  
+    
+    
+    
   return (
     <View style={styles.container}>
-      <VideoPlayer
-       playbackCallback={status => setStatus(status)}
+      {/* <VideoPlayer
+        playbackCallback={(status) => setStatus(status)}
         defaultControlsVisible
         videoProps={{
           shouldPlay: false,
-          source: require("../assets/vid.mp4"),
+          source: asset,
           ref: video,
+          onError:(error)=>console.log(error)
+          
         }}
         slider={{
           visible: true,
@@ -44,20 +128,35 @@ export default () => {
           visible: true,
         }}
         timeVisible={true}
-        style={{ height: 160 }}
-      />
-      {/* <Button
-        title={status?.isPlaying ? "Pause" : "Play"}
-        onPress={handleplay}
+        style={{
+          height: 160,
+        }}
       /> */}
-      <Button
-        title={"forward 10sec"}
-        onPress={handleForward}
-      />
-      <Button
-        title={"backward 10sec"}
-        onPress={handleBackward}
-      />
+
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          width: "80%",
+        }}
+      >
+        <ProgressBar
+          containerStyle={{
+            marginTop: SIZES.radius,
+            marginBottom: SIZES.radius,
+          }}
+          barStyle={{ height: 5, borderRadius: 3 }}
+          barPercentage={downloadProgress}
+        />
+        <Text>{downloadProgress}%</Text>
+      </View>
+      <View style={{ marginBottom: 10 }}>
+        <Button title={"Donwload"} onPress={downloadFile} />
+      </View>
+      <Button title={"Pause"} onPress={handlePause} />
+
+      {/* <Button title={"Resume"} onPress={handleResume} /> */}
+      {/* <Button title={"Try"} onPress={handleTryload} />  */}
     </View>
   );
 };

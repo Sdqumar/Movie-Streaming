@@ -1,9 +1,18 @@
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 import { COLORS, SIZES } from "../constants";
 
-export default ({ profiles }) => {
-  if (profiles.length <=3) {
+type props ={
+profiles:
+    {
+    profile:ImageSourcePropType
+}[]
+}
+
+export default ({ profiles }:props) => {
+
+
+    if (profiles.length <=3) {
     return (
       <View style={styles.container}>
         {profiles.map((item, index) => (

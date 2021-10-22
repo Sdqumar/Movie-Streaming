@@ -1,8 +1,12 @@
 import React from "react"
-import { View } from "react-native"
+import { View, ViewStyle } from "react-native"
 import { COLORS, SIZES } from "../constants"
-
-export default ({containerStyle,barStyle,barPercentage})=>{
+type props ={
+    containerStyle:ViewStyle,
+    barStyle:ViewStyle,
+    barPercentage:string | number | undefined
+}
+export default ({containerStyle,barStyle,barPercentage}:props)=>{
     return(
         <View style={{...containerStyle}}>
             <View style={{

@@ -14,6 +14,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, icons,  SIZES } from '../constants';
 import ProgressBar from '../components/ProgressBar';
 
+
+
 const MovieDetail = ({navigation,route}) => {
 const [selectedMovie,setSelectedMovie] = useState(null)
 
